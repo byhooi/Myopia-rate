@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>班级近视率分析</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f7fa;
+      --panel: #ffffff;
+      --ink: #172026;
+      --muted: #5f6f7a;
+      --line: #d8e0e6;
+      --green: #0b8f75;
+      --green-soft: #dff3ee;
+      --red: #cf4d3f;
+      --red-soft: #ffe7e2;
+      --blue: #2c6bbd;
+      --blue-soft: #e5eefb;
+      --gold: #b87a00;
+      --gold-soft: #fff1c9;
+      --shadow: 0 18px 45px rgba(23, 32, 38, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(23, 32, 38, 0.04) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(23, 32, 38, 0.04) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px;
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 44px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+
+    .headline,
+    .panel,
+    .metric {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .headline {
+      padding: 28px;
+      min-height: 330px;
+      display: grid;
+      align-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .headline::after {
+      content: "";
+      position: absolute;
+      right: 28px;
+      top: 24px;
+      width: 190px;
+      height: 190px;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 31%, rgba(44, 107, 189, 0.9) 32% 36%, transparent 37%),
+        linear-gradient(90deg, transparent 48%, rgba(207, 77, 63, 0.8) 49% 51%, transparent 52%),
+        linear-gradient(0deg, transparent 48%, rgba(11, 143, 117, 0.7) 49% 51%, transparent 52%);
+      border-radius: 50%;
+      opacity: 0.25;
+      transform: rotate(-10deg);
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin: 0 0 14px;
+    }
+
+    h1 {
+      max-width: 620px;
+      margin: 0;
+      font-size: clamp(34px, 6vw, 68px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 680px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .rate-stage {
+      min-height: 330px;
+      padding: 24px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 16px;
+      background:
+        linear-gradient(135deg, rgba(11, 143, 117, 0.12), rgba(44, 107, 189, 0.08)),
+        var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .stage-top,
+    .stage-bottom,
+    .panel-head,
+    .legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .big-rate {
+      align-self: center;
+      display: grid;
+      place-items: center;
+      width: min(270px, 76vw);
+      aspect-ratio: 1;
+      margin: 0 auto;
+      border-radius: 50%;
+      background:
+        conic-gradient(var(--red) 0 var(--rate-deg), #e9eef2 var(--rate-deg) 360deg);
+      position: relative;
+    }
+
+    .big-rate::before {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border-radius: 50%;
+      background: var(--panel);
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .big-rate strong,
+    .big-rate span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .big-rate strong {
+      font-size: clamp(42px, 8vw, 76px);
+      line-height: 1;
+    }
+
+    .big-rate span {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .stage-bottom {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mini-stat {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .mini-stat b {
+      display: block;
+      font-size: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .metric {
+      min-height: 136px;
+      padding: 18px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .metric:nth-child(1),
+    .metric:nth-child(2),
+    .metric:nth-child(3),
+    .metric:nth-child(4) {
+      grid-column: span 3;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1;
+      margin-top: 12px;
+    }
+
+    .metric p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .metric .accent {
+      width: 34px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .metric:nth-child(2) .accent { background: var(--red); }
+    .metric:nth-child(3) .accent { background: var(--blue); }
+    .metric:nth-child(4) .accent { background: var(--gold); }
+
+    .gender-panel {
+      margin-bottom: 22px;
+    }
+
+    .panel {
+      padding: 22px;
+      min-width: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .bars {
+      display: grid;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 58px 1fr 80px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bar-track {
+      height: 16px;
+      background: #e8edf1;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: var(--bar);
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      border-radius: inherit;
+    }
+
+    .bar-row:nth-child(2) .bar-fill {
+      background: linear-gradient(90deg, var(--red), var(--gold));
+    }
+
+    .bar-value {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+    }
+
+    .legend {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+    }
+
+    .swatch.red { background: var(--red-soft); border-color: rgba(207, 77, 63, 0.42); }
+    .swatch.green { background: var(--green-soft); }
+
+    .insights {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .insight {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      min-height: 150px;
+      box-shadow: var(--shadow);
+    }
+
+    .insight b {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .insight p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .footnote {
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .insights {
+        grid-template-columns: 1fr;
+      }
+
+      .metric:nth-child(1),
+      .metric:nth-child(2),
+      .metric:nth-child(3),
+      .metric:nth-child(4) {
+        grid-column: span 6;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 20px, 1180px);
+        padding: 18px 0 30px;
+      }
+
+      .headline,
+      .rate-stage,
+      .panel,
+      .metric,
+      .insight {
+        padding: 16px;
+      }
+
+      .headline {
+        min-height: 280px;
+      }
+
+      .headline::after {
+        width: 130px;
+        height: 130px;
+        right: 10px;
+        top: 16px;
+      }
+
+      .metric:nth-child(1),
+      .metric:nth-child(2),
+      .metric:nth-child(3),
+      .metric:nth-child(4) {
+        grid-column: span 12;
+      }
+
+      .bar-row {
+        grid-template-columns: 50px 1fr 64px;
+        gap: 8px;
+      }
+
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="headline">
+        <div>
+          <p class="eyebrow">班级健康数据</p>
+          <h1 id="page-title">班级近视率分析</h1>
+          <p class="hero-copy" id="heroCopy">正在根据数据计算近视率。</p>
+        </div>
+        <div class="legend" aria-label="图例">
+          <span class="legend-item"><i class="swatch red"></i>已标记近视</span>
+          <span class="legend-item"><i class="swatch green"></i>未标记近视</span>
+        </div>
+      </div>
+
+      <aside class="rate-stage" aria-label="整体近视率">
+        <div class="stage-top">
+          <span class="label">整体近视率</span>
+          <span class="label" id="sampleCount">样本计算中</span>
+        </div>
+        <div class="big-rate" id="rateDonut">
+          <strong id="overallRate">--</strong>
+          <span id="overallCount">正在计算</span>
+        </div>
+        <div class="stage-bottom">
+          <div class="mini-stat">
+            <span class="label">近视人数</span>
+            <b id="myopiaCount">--</b>
+          </div>
+          <div class="mini-stat">
+            <span class="label">未标记人数</span>
+            <b id="clearCount">--</b>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid" aria-label="关键指标">
+      <article class="metric">
+        <div class="accent"></div>
+        <div>
+          <span class="label">样本总数</span>
+          <strong id="metricTotal">--</strong>
+          <p>来自 Excel 表格的有效学生记录。</p>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="accent"></div>
+        <div>
+          <span class="label">近视占比</span>
+          <strong id="metricRate">--</strong>
+          <p id="metricRateNote">正在计算近视人数。</p>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="accent"></div>
+        <div>
+          <span class="label">性别差异</span>
+          <strong id="metricGap">--</strong>
+          <p>女生近视率高于男生。</p>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="accent"></div>
+        <div>
+          <span class="label">分析维度</span>
+          <strong>2 项</strong>
+          <p>整体近视率和性别对比。</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel gender-panel">
+      <div class="panel-head">
+        <div>
+          <h2>性别对比</h2>
+          <p class="hint" id="genderHint">正在计算性别分组。</p>
+        </div>
+      </div>
+      <div class="bars" id="genderBars"></div>
+    </section>
+
+    <section class="insights" aria-label="分析结论">
+      <article class="insight">
+        <b>整体水平</b>
+        <p id="overallInsight">正在计算整体近视率。</p>
+      </article>
+      <article class="insight">
+        <b>性别差异</b>
+        <p id="genderInsight">正在计算性别差异。</p>
+      </article>
+    </section>
+
+    <p class="footnote">数据来源：近视率.xlsx。统计口径：仅“近视”列为“是”的记录计入近视，空白记录计入未标记近视。</p>
+  </main>
+
+  <script>
+    // 数据由 update_page_data.py 根据 近视率.xlsx 生成。
+    const records = [{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true}];
+
+    const percent = (part, total) => total ? part / total * 100 : 0;
+    const fmt = (value) => `${value.toFixed(1)}%`;
+    const genderName = (label) => label.length === 1 ? `${label}生` : label;
+    const fmtRateText = (item) => `${genderName(item.label)}近视率为 ${fmt(item.rate)}（${item.myopia}/${item.total}）`;
+    const total = records.length;
+    const myopia = records.filter((item) => item.myopia).length;
+    const overallRate = percent(myopia, total);
+
+    document.documentElement.style.setProperty("--rate-deg", `${overallRate * 3.6}deg`);
+    document.querySelector("#overallRate").textContent = fmt(overallRate);
+    document.querySelector("#overallCount").textContent = `${myopia} 人近视`;
+    document.querySelector("#myopiaCount").textContent = myopia;
+    document.querySelector("#clearCount").textContent = total - myopia;
+    document.querySelector("#metricTotal").textContent = total;
+    document.querySelector("#metricRate").textContent = fmt(overallRate);
+    document.querySelector("#sampleCount").textContent = `样本 ${total} 人`;
+    document.querySelector("#heroCopy").textContent = `基于 ${total} 名学生的性别和近视标记统计。近视列标记为“是”计入近视，空白按未标记近视处理。`;
+    document.querySelector("#metricRateNote").textContent = `${myopia} 人被明确标记为近视。`;
+
+    const genderOrder = ["女", "男"];
+    const genders = Array.from(new Set(records.map((item) => item.gender).filter(Boolean))).sort((a, b) => {
+      const ai = genderOrder.indexOf(a);
+      const bi = genderOrder.indexOf(b);
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      if (ai !== -1) return -1;
+      if (bi !== -1) return 1;
+      return a.localeCompare(b, "zh-CN");
+    });
+
+    const byGender = genders.map((gender) => {
+      const items = records.filter((item) => item.gender === gender);
+      const count = items.filter((item) => item.myopia).length;
+      return { label: gender, total: items.length, myopia: count, rate: percent(count, items.length) };
+    });
+
+    const genderRates = byGender.map((item) => item.rate);
+    const genderGap = genderRates.length > 1 ? Math.max(...genderRates) - Math.min(...genderRates) : 0;
+    document.querySelector("#metricGap").textContent = `${genderGap.toFixed(1)}点`;
+    document.querySelector("#genderHint").textContent = byGender.length
+      ? `${byGender.map((item) => `${genderName(item.label)} ${item.total} 人，近视 ${item.myopia} 人`).join("；")}。`
+      : "暂无性别分组数据。";
+    document.querySelector("#overallInsight").textContent = myopia
+      ? `全班近视率为 ${fmt(overallRate)}，约每 ${(total / myopia).toFixed(1)} 名学生中有 1 名被标记近视。当前样本中未标记近视人数为 ${total - myopia} 人。`
+      : `当前样本没有被标记近视的记录，未标记近视人数为 ${total} 人。`;
+    document.querySelector("#genderInsight").textContent = byGender.length > 1
+      ? `${byGender.map(fmtRateText).join("，")}，最高和最低相差 ${genderGap.toFixed(1)} 个百分点；样本较小，适合先作为观察信号。`
+      : byGender.length === 1
+        ? `${fmtRateText(byGender[0])}；当前只有一个性别分组，不计算组间差异。`
+        : "暂无性别分组数据。";
+
+    document.querySelector("#genderBars").innerHTML = byGender.map((item) => `
+      <div class="bar-row">
+        <b>${item.label}</b>
+        <div class="bar-track" aria-label="${item.label}近视率 ${fmt(item.rate)}">
+          <div class="bar-fill" style="--bar:${item.rate}%"></div>
+        </div>
+        <span class="bar-value">${fmt(item.rate)}</span>
+      </div>
+    `).join("");
+  </script>
+</body>
+</html>
