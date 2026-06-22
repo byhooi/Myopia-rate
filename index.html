@@ -483,9 +483,9 @@
       <article class="metric">
         <div class="accent"></div>
         <div>
-          <span class="label">分析维度</span>
-          <strong>2 项</strong>
-          <p>整体近视率和性别对比。</p>
+          <span class="label">基准对比</span>
+          <strong id="metricBenchmark">--</strong>
+          <p id="metricBenchmarkNote">正在对比全国小学生近视率。</p>
         </div>
       </article>
     </section>
@@ -511,12 +511,12 @@
       </article>
     </section>
 
-    <p class="footnote">数据来源：近视率.xlsx。统计口径：仅“近视”列为“是”的记录计入近视，空白记录计入未标记近视。</p>
+    <p class="footnote">数据来源：近视率.xlsx（班级原始记录）；全国小学生近视率 35.6% 来自国家卫健委 2023 年数据；深圳 2030 年防控目标（小学生&lt;38%）来自《深圳市综合防控儿童青少年近视实施方案》。统计口径：仅“近视”列为“是”的记录计入近视，空白记录计入未标记近视。</p>
   </main>
 
   <script>
     // 数据由 update_page_data.py 根据 近视率.xlsx 生成。
-    const records = [{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true}];
+    const records = [{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true}];
 
     const percent = (part, total) => total ? part / total * 100 : 0;
     const fmt = (value) => `${value.toFixed(1)}%`;
@@ -536,6 +536,17 @@
     document.querySelector("#sampleCount").textContent = `样本 ${total} 人`;
     document.querySelector("#heroCopy").textContent = `基于 ${total} 名学生的性别和近视标记统计。近视列标记为“是”计入近视，空白按未标记近视处理。`;
     document.querySelector("#metricRateNote").textContent = `${myopia} 人被明确标记为近视。`;
+
+    // 基准对比:全国小学生近视率(国家卫健委 2023)、深圳 2030 年防控目标。
+    const NATIONAL_PRIMARY_RATE = 35.6;
+    const SZ_TARGET_RATE = 38;
+    const diffNational = overallRate - NATIONAL_PRIMARY_RATE;
+    const meetsTarget = overallRate < SZ_TARGET_RATE;
+    const nationalCmp = diffNational === 0
+      ? "与全国小学生近视率(35.6%)持平"
+      : `较全国小学生近视率(35.6%)${diffNational < 0 ? "低" : "高"} ${Math.abs(diffNational).toFixed(1)} 个百分点`;
+    document.querySelector("#metricBenchmark").textContent = meetsTarget ? "已达标" : "未达标";
+    document.querySelector("#metricBenchmarkNote").textContent = `${nationalCmp},${meetsTarget ? "已达成" : "未达成"}深圳 2030 年防控目标(小学生<38%)。`;
 
     const genderOrder = ["女", "男"];
     const genders = Array.from(new Set(records.map((item) => item.gender).filter(Boolean))).sort((a, b) => {
