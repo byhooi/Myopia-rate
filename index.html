@@ -477,7 +477,7 @@
         <div>
           <span class="label">性别差异</span>
           <strong id="metricGap">--</strong>
-          <p>女生近视率高于男生。</p>
+          <p id="metricGapNote">正在计算性别差异。</p>
         </div>
       </article>
       <article class="metric">
@@ -514,12 +514,16 @@
     <p class="footnote">数据来源：近视率.xlsx（班级原始记录）；全国小学生近视率 35.6% 来自国家卫健委 2023 年数据；深圳 2030 年防控目标（小学生&lt;38%）来自《深圳市综合防控儿童青少年近视实施方案》。统计口径：仅“近视”列为“是”的记录计入近视，空白记录计入未标记近视。</p>
   </main>
 
+  <!-- records 数据由 update_page_data.py 根据 近视率.xlsx 生成 -->
+  <script type="application/json" id="records-data">[{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true}]</script>
   <script>
-    // 数据由 update_page_data.py 根据 近视率.xlsx 生成。
-    const records = [{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true}];
+    const records = JSON.parse(document.getElementById("records-data").textContent);
 
     const percent = (part, total) => total ? part / total * 100 : 0;
     const fmt = (value) => `${value.toFixed(1)}%`;
+    const escapeHtml = (text) => String(text).replace(/[&<>"']/g, (ch) => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
+    ));
     const genderName = (label) => label.length === 1 ? `${label}生` : label;
     const fmtRateText = (item) => `${genderName(item.label)}近视率为 ${fmt(item.rate)}（${item.myopia}/${item.total}）`;
     const total = records.length;
@@ -543,10 +547,10 @@
     const diffNational = overallRate - NATIONAL_PRIMARY_RATE;
     const meetsTarget = overallRate < SZ_TARGET_RATE;
     const nationalCmp = diffNational === 0
-      ? "与全国小学生近视率(35.6%)持平"
-      : `较全国小学生近视率(35.6%)${diffNational < 0 ? "低" : "高"} ${Math.abs(diffNational).toFixed(1)} 个百分点`;
+      ? `与全国小学生近视率(${NATIONAL_PRIMARY_RATE}%)持平`
+      : `较全国小学生近视率(${NATIONAL_PRIMARY_RATE}%)${diffNational < 0 ? "低" : "高"} ${Math.abs(diffNational).toFixed(1)} 个百分点`;
     document.querySelector("#metricBenchmark").textContent = meetsTarget ? "已达标" : "未达标";
-    document.querySelector("#metricBenchmarkNote").textContent = `${nationalCmp},${meetsTarget ? "已达成" : "未达成"}深圳 2030 年防控目标(小学生<38%)。`;
+    document.querySelector("#metricBenchmarkNote").textContent = `${nationalCmp}，${meetsTarget ? "已达成" : "未达成"}深圳 2030 年防控目标（小学生<${SZ_TARGET_RATE}%）。`;
 
     const genderOrder = ["女", "男"];
     const genders = Array.from(new Set(records.map((item) => item.gender).filter(Boolean))).sort((a, b) => {
@@ -566,7 +570,15 @@
 
     const genderRates = byGender.map((item) => item.rate);
     const genderGap = genderRates.length > 1 ? Math.max(...genderRates) - Math.min(...genderRates) : 0;
+    const byRateDesc = [...byGender].sort((a, b) => b.rate - a.rate);
     document.querySelector("#metricGap").textContent = `${genderGap.toFixed(1)}点`;
+    document.querySelector("#metricGapNote").textContent = byGender.length > 1
+      ? (genderGap === 0
+        ? "各性别分组近视率持平。"
+        : `${genderName(byRateDesc[0].label)}近视率高于${genderName(byRateDesc[byRateDesc.length - 1].label)} ${genderGap.toFixed(1)} 个百分点。`)
+      : byGender.length === 1
+        ? "仅一个性别分组，不计算组间差异。"
+        : "暂无性别分组数据。";
     document.querySelector("#genderHint").textContent = byGender.length
       ? `${byGender.map((item) => `${genderName(item.label)} ${item.total} 人，近视 ${item.myopia} 人`).join("；")}。`
       : "暂无性别分组数据。";
@@ -581,8 +593,8 @@
 
     document.querySelector("#genderBars").innerHTML = byGender.map((item) => `
       <div class="bar-row">
-        <b>${item.label}</b>
-        <div class="bar-track" aria-label="${item.label}近视率 ${fmt(item.rate)}">
+        <b>${escapeHtml(item.label)}</b>
+        <div class="bar-track" aria-label="${escapeHtml(item.label)}近视率 ${fmt(item.rate)}">
           <div class="bar-fill" style="--bar:${item.rate}%"></div>
         </div>
         <span class="bar-value">${fmt(item.rate)}</span>
