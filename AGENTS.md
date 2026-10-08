@@ -7,7 +7,7 @@
 - `index.html`：静态分析页面，包含样式、前端计算逻辑和由脚本注入的数据。
 - `update_page_data.py`：从 `近视率.xlsx` 读取 `性别`、`近视` 两列，并更新 `index.html` 中的 `records` 数据块。
 - `近视率.xlsx`：原始数据表。更新数据时优先修改此文件，不要手工改 HTML 中的数据。
-- `CNAME`：历史 GitHub Pages 自定义域名配置；项目已迁移到 Cloudflare Pages，线上自定义域名以 Cloudflare Pages 配置为准。
+- `CNAME`：GitHub Pages 自定义域名配置，当前域名为 `js.468024.xyz`；修改域名时以此文件内容为准，并同步 GitHub Pages 设置与 DNS 配置。
 - `.gitignore`：忽略本地或生成文件。
 
 当前没有独立的 `src/`、`tests/` 或资源目录；新增代码时保持结构简单，除非确实需要拆分。
@@ -17,7 +17,7 @@
 - `python update_page_data.py`：从 Excel 重新生成页面数据，并输出总人数、近视人数和近视率。
 - `python -m py_compile update_page_data.py`：检查 Python 脚本语法。
 - 直接用浏览器打开 `index.html`：查看页面效果；本项目不需要本地开发服务器。
-- 线上部署使用 Cloudflare Pages；更新静态文件后由 Cloudflare Pages 根据仓库变更自动发布。
+- 线上部署使用 GitHub Pages；更新静态文件并推送后，由 GitHub Pages 根据仓库的发布配置自动部署，自定义域名以 `CNAME` 为准。
 
 更新数据后的常规流程：
 
@@ -38,4 +38,4 @@ python -m py_compile update_page_data.py
 
 现有提交使用中文描述式信息，例如 `添加 .gitignore、CNAME 文件和初始 HTML 页面`、`更新 CNAME 文件以更改域名`。继续使用简短的动宾结构，说明主要变更。
 
-PR 应包含：变更目的、数据口径是否变化、已运行的命令、页面截图或关键数值对比。涉及 Excel 数据更新时，说明总人数、近视人数和近视率。涉及部署配置时，说明 Cloudflare Pages 的项目、生产域名和自定义域名是否变化。
+PR 应包含：变更目的、数据口径是否变化、已运行的命令、页面截图或关键数值对比。涉及 Excel 数据更新时，说明总人数、近视人数和近视率。涉及部署配置时，说明 GitHub Pages 的发布来源、自定义域名（`CNAME`）和 DNS 配置是否变化。

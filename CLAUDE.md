@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-班级近视率分析静态页面。整站只有一个 `index.html`(内联 CSS/JS,无构建步骤、无框架),数据由 `update_page_data.py` 从 `近视率.xlsx` 注入。推送到 main 后由 Cloudflare Pages 自动发布(`CNAME` 是历史 GitHub Pages 遗留,线上域名以 Cloudflare Pages 配置为准)。
+班级近视率分析静态页面。整站只有一个 `index.html`(内联 CSS/JS,无构建步骤、无框架),数据由 `update_page_data.py` 从 `近视率.xlsx` 注入。更新静态文件并推送后,由 GitHub Pages 根据仓库的发布配置自动部署。自定义域名以 `CNAME` 文件为准,当前为 `js.468024.xyz`;修改域名时同步 GitHub Pages 设置与 DNS 配置。
 
 仓库规范详见 `AGENTS.md`(中文文案、UTF-8、Python 4 空格缩进 + snake_case、中文动宾结构提交信息等)。
 
