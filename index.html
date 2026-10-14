@@ -14,14 +14,16 @@
       --line: #d8e0e6;
       --green: #0b8f75;
       --green-soft: #dff3ee;
+      --green-border: rgba(11, 143, 117, 0.35);
       --red: #cf4d3f;
       --red-soft: #ffe7e2;
+      --red-border: rgba(207, 77, 63, 0.4);
       --blue: #2c6bbd;
       --blue-soft: #e5eefb;
       --gold: #b87a00;
       --gold-soft: #fff1c9;
-      --shadow: 0 18px 45px rgba(23, 32, 38, 0.08);
-      --radius: 8px;
+      --shadow: 0 16px 40px rgba(23, 32, 38, 0.07);
+      --radius: 10px;
     }
 
     * {
@@ -36,14 +38,14 @@
         var(--paper);
       background-size: 28px 28px;
       color: var(--ink);
-      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       letter-spacing: 0;
     }
 
     .shell {
       width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 32px 0 44px;
+      padding: 32px 0 48px;
     }
 
     .hero {
@@ -57,10 +59,18 @@
     .headline,
     .panel,
     .metric {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.95);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .headline:hover,
+    .panel:hover,
+    .metric:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 48px rgba(23, 32, 38, 0.11);
     }
 
     .headline {
@@ -84,8 +94,9 @@
         linear-gradient(90deg, transparent 48%, rgba(207, 77, 63, 0.8) 49% 51%, transparent 52%),
         linear-gradient(0deg, transparent 48%, rgba(11, 143, 117, 0.7) 49% 51%, transparent 52%);
       border-radius: 50%;
-      opacity: 0.25;
+      opacity: 0.22;
       transform: rotate(-10deg);
+      pointer-events: none;
     }
 
     .eyebrow {
@@ -99,16 +110,16 @@
     h1 {
       max-width: 620px;
       margin: 0;
-      font-size: clamp(34px, 6vw, 68px);
-      line-height: 0.98;
-      letter-spacing: 0;
+      font-size: clamp(34px, 6vw, 66px);
+      line-height: 1.02;
+      letter-spacing: -0.01em;
     }
 
     .hero-copy {
       max-width: 680px;
       margin: 18px 0 0;
       color: var(--muted);
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.8;
     }
 
@@ -124,6 +135,12 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .rate-stage:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 48px rgba(23, 32, 38, 0.11);
     }
 
     .stage-top,
@@ -146,13 +163,14 @@
       align-self: center;
       display: grid;
       place-items: center;
-      width: min(270px, 76vw);
+      width: min(260px, 74vw);
       aspect-ratio: 1;
       margin: 0 auto;
       border-radius: 50%;
       background:
-        conic-gradient(var(--red) 0 var(--rate-deg), #e9eef2 var(--rate-deg) 360deg);
+        conic-gradient(var(--red) 0 var(--rate-deg, 0deg), #e9eef2 var(--rate-deg, 0deg) 360deg);
       position: relative;
+      transition: box-shadow 0.3s ease;
     }
 
     .big-rate::before {
@@ -171,8 +189,9 @@
     }
 
     .big-rate strong {
-      font-size: clamp(42px, 8vw, 76px);
+      font-size: clamp(42px, 8vw, 72px);
       line-height: 1;
+      font-variant-numeric: tabular-nums;
     }
 
     .big-rate span {
@@ -185,18 +204,21 @@
     .stage-bottom {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
 
     .mini-stat {
-      padding: 12px;
+      padding: 12px 14px;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.7);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.75);
     }
 
     .mini-stat b {
       display: block;
       font-size: 24px;
+      font-variant-numeric: tabular-nums;
+      margin-top: 4px;
     }
 
     .grid {
@@ -222,9 +244,10 @@
 
     .metric strong {
       display: block;
-      font-size: clamp(28px, 4vw, 42px);
+      font-size: clamp(28px, 4vw, 40px);
       line-height: 1;
       margin-top: 12px;
+      font-variant-numeric: tabular-nums;
     }
 
     .metric p {
@@ -245,28 +268,331 @@
     .metric:nth-child(3) .accent { background: var(--blue); }
     .metric:nth-child(4) .accent { background: var(--gold); }
 
-    .gender-panel {
-      margin-bottom: 22px;
-    }
-
     .panel {
-      padding: 22px;
+      padding: 24px;
       min-width: 0;
+      margin-bottom: 22px;
     }
 
     h2 {
       margin: 0;
       font-size: 20px;
-      letter-spacing: 0;
+      letter-spacing: -0.01em;
     }
 
     .hint {
-      margin: 8px 0 0;
+      margin: 6px 0 0;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.7;
     }
 
+    /* 点阵分布图样式 */
+    .matrix-panel {
+      margin-bottom: 22px;
+    }
+
+    .matrix-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: #f0f4f7;
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+
+    .filter-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .filter-btn:hover {
+      color: var(--ink);
+    }
+
+    .filter-btn.active {
+      background: var(--ink);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(23, 32, 38, 0.18);
+    }
+
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+      gap: 10px;
+      padding: 4px 0 10px;
+    }
+
+    .student-cell {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, opacity 0.25s ease;
+      user-select: none;
+    }
+
+    .student-cell:hover {
+      transform: scale(1.18) translateY(-4px);
+      z-index: 10;
+      box-shadow: 0 10px 22px rgba(23, 32, 38, 0.16);
+    }
+
+    .student-cell.dimmed {
+      opacity: 0.2;
+      transform: scale(0.92);
+      pointer-events: none;
+    }
+
+    .student-cell.myopia-yes {
+      background: var(--red-soft);
+      color: var(--red);
+      border-color: var(--red-border);
+    }
+
+    .student-cell.myopia-no {
+      background: var(--green-soft);
+      color: var(--green);
+      border-color: var(--green-border);
+    }
+
+    .student-cell .cell-icon {
+      font-size: 14px;
+      line-height: 1;
+      margin-bottom: 2px;
+      font-weight: 800;
+    }
+
+    .student-cell .cell-num {
+      font-size: 10px;
+      font-weight: 700;
+      opacity: 0.85;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cell-tooltip {
+      position: absolute;
+      bottom: calc(100% + 9px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(23, 32, 38, 0.95);
+      color: #ffffff;
+      padding: 6px 11px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 30;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+    }
+
+    .cell-tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: rgba(23, 32, 38, 0.95);
+    }
+
+    .student-cell:hover .cell-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* 基准标尺图样式 */
+    .benchmark-panel {
+      margin-bottom: 22px;
+    }
+
+    .benchmark-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--green-soft);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+
+    .benchmark-status-badge.alert {
+      background: var(--red-soft);
+      color: var(--red);
+      border-color: var(--red-border);
+    }
+
+    .benchmark-gauge-wrap {
+      margin-top: 36px;
+      margin-bottom: 12px;
+      position: relative;
+      padding: 0 8px 12px;
+    }
+
+    .benchmark-track {
+      height: 20px;
+      background: #eef2f5;
+      border-radius: 999px;
+      display: flex;
+      position: relative;
+      border: 1px solid var(--line);
+      overflow: visible;
+    }
+
+    .benchmark-zone {
+      height: 100%;
+      position: relative;
+    }
+
+    .benchmark-zone.safe {
+      width: 71.2%; /* 35.6 / 50 * 100% */
+      background: linear-gradient(90deg, #dff3ee, #c7ece3);
+      border-top-left-radius: 999px;
+      border-bottom-left-radius: 999px;
+    }
+
+    .benchmark-zone.buffer {
+      width: 4.8%; /* (38 - 35.6) / 50 * 100% */
+      background: #fff0c2;
+    }
+
+    .benchmark-zone.alert {
+      width: 24%; /* (50 - 38) / 50 * 100% */
+      background: #ffe3dd;
+      border-top-right-radius: 999px;
+      border-bottom-right-radius: 999px;
+    }
+
+    .benchmark-line {
+      position: absolute;
+      top: -8px;
+      bottom: -12px;
+      width: 2px;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .benchmark-line.national {
+      left: 71.2%;
+      border-left: 2px dashed #0b8f75;
+    }
+
+    .benchmark-line.sz-target {
+      left: 76%;
+      border-left: 2px solid var(--red);
+    }
+
+    .benchmark-line .line-tag {
+      position: absolute;
+      top: 32px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      padding: 3px 8px;
+      border-radius: 5px;
+      line-height: 1.25;
+      pointer-events: auto;
+      box-shadow: 0 2px 6px rgba(23, 32, 38, 0.06);
+    }
+
+    /* 全国均值向左延伸，紧靠虚线左侧，完全避开右侧 */
+    .benchmark-line.national .line-tag {
+      right: 6px;
+      transform: none;
+      background: var(--green-soft);
+      color: #066753;
+      border: 1px solid var(--green-border);
+    }
+
+    /* 深圳目标向右延伸，紧靠实线右侧，完全避开左侧 */
+    .benchmark-line.sz-target .line-tag {
+      left: 6px;
+      transform: none;
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid var(--red-border);
+    }
+
+    .benchmark-pin {
+      position: absolute;
+      top: -34px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: left 1s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .benchmark-pin-badge {
+      background: var(--ink);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 5px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(23, 32, 38, 0.22);
+    }
+
+    .benchmark-pin-arrow {
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--ink);
+    }
+
+    .benchmark-ticks {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 48px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .benchmark-legend-bar {
+      display: flex;
+      gap: 16px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    /* 性别条形图 */
     .bars {
       display: grid;
       gap: 16px;
@@ -281,7 +607,7 @@
     }
 
     .bar-track {
-      height: 16px;
+      height: 18px;
       background: #e8edf1;
       border-radius: 999px;
       overflow: hidden;
@@ -290,9 +616,10 @@
 
     .bar-fill {
       height: 100%;
-      width: var(--bar);
+      width: 0%;
       background: linear-gradient(90deg, var(--blue), var(--green));
       border-radius: inherit;
+      transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .bar-row:nth-child(2) .bar-fill {
@@ -320,14 +647,15 @@
     }
 
     .swatch {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border-radius: 4px;
       border: 1px solid var(--line);
     }
 
-    .swatch.red { background: var(--red-soft); border-color: rgba(207, 77, 63, 0.42); }
-    .swatch.green { background: var(--green-soft); }
+    .swatch.red { background: var(--red-soft); border-color: var(--red-border); }
+    .swatch.green { background: var(--green-soft); border-color: var(--green-border); }
+    .swatch.yellow { background: var(--gold-soft); border-color: rgba(184, 122, 0, 0.4); }
 
     .insights {
       display: grid;
@@ -336,12 +664,18 @@
     }
 
     .insight {
-      padding: 18px;
+      padding: 20px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel);
       min-height: 150px;
       box-shadow: var(--shadow);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .insight:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 48px rgba(23, 32, 38, 0.11);
     }
 
     .insight b {
@@ -358,7 +692,7 @@
     }
 
     .footnote {
-      margin: 22px 0 0;
+      margin: 24px 0 0;
       color: var(--muted);
       font-size: 12px;
       line-height: 1.7;
@@ -381,7 +715,7 @@
     @media (max-width: 640px) {
       .shell {
         width: min(100% - 20px, 1180px);
-        padding: 18px 0 30px;
+        padding: 18px 0 32px;
       }
 
       .headline,
@@ -415,6 +749,28 @@
         gap: 8px;
       }
 
+      .matrix-grid {
+        grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+        gap: 6px;
+      }
+
+      .benchmark-line.national .line-tag {
+        top: 28px;
+        right: 4px;
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+
+      .benchmark-line.sz-target .line-tag {
+        top: 52px;
+        left: -8px;
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+
+      .benchmark-ticks {
+        margin-top: 66px;
+      }
     }
   </style>
 </head>
@@ -423,7 +779,7 @@
     <section class="hero" aria-labelledby="page-title">
       <div class="headline">
         <div>
-          <p class="eyebrow">班级健康数据</p>
+          <p class="eyebrow">班级健康数据看板</p>
           <h1 id="page-title">班级近视率分析</h1>
           <p class="hero-copy" id="heroCopy">正在根据数据计算近视率。</p>
         </div>
@@ -439,28 +795,29 @@
           <span class="label" id="sampleCount">样本计算中</span>
         </div>
         <div class="big-rate" id="rateDonut">
-          <strong id="overallRate">--</strong>
+          <strong id="overallRate">0.0%</strong>
           <span id="overallCount">正在计算</span>
         </div>
         <div class="stage-bottom">
           <div class="mini-stat">
             <span class="label">近视人数</span>
-            <b id="myopiaCount">--</b>
+            <b id="myopiaCount">0</b>
           </div>
           <div class="mini-stat">
             <span class="label">未标记人数</span>
-            <b id="clearCount">--</b>
+            <b id="clearCount">0</b>
           </div>
         </div>
       </aside>
     </section>
 
+    <!-- 关键指标 -->
     <section class="grid" aria-label="关键指标">
       <article class="metric">
         <div class="accent"></div>
         <div>
           <span class="label">样本总数</span>
-          <strong id="metricTotal">--</strong>
+          <strong id="metricTotal">0</strong>
           <p>来自 Excel 表格的有效学生记录。</p>
         </div>
       </article>
@@ -468,7 +825,7 @@
         <div class="accent"></div>
         <div>
           <span class="label">近视占比</span>
-          <strong id="metricRate">--</strong>
+          <strong id="metricRate">0.0%</strong>
           <p id="metricRateNote">正在计算近视人数。</p>
         </div>
       </article>
@@ -476,7 +833,7 @@
         <div class="accent"></div>
         <div>
           <span class="label">性别差异</span>
-          <strong id="metricGap">--</strong>
+          <strong id="metricGap">0.0点</strong>
           <p id="metricGapNote">正在计算性别差异。</p>
         </div>
       </article>
@@ -490,6 +847,71 @@
       </article>
     </section>
 
+    <!-- 44人学生点阵分布矩阵 -->
+    <section class="panel matrix-panel" aria-label="全班视力分布矩阵">
+      <div class="matrix-header">
+        <div>
+          <h2>全班视力分布矩阵</h2>
+          <p class="hint" id="matrixHint">每个卡片代表 1 位学生。悬停查看详情，支持点击分类筛选。</p>
+        </div>
+        <div class="filter-group" id="filterGroup" role="tablist" aria-label="学生矩阵筛选">
+          <button class="filter-btn active" data-filter="all">全部 (44)</button>
+          <button class="filter-btn" data-filter="female">女生 (24)</button>
+          <button class="filter-btn" data-filter="male">男生 (20)</button>
+          <button class="filter-btn" data-filter="myopia">仅近视 (14)</button>
+          <button class="filter-btn" data-filter="clear">视力正常 (30)</button>
+        </div>
+      </div>
+      <div class="matrix-grid" id="matrixGrid"></div>
+    </section>
+
+    <!-- 近视防控基准标尺 -->
+    <section class="panel benchmark-panel" aria-label="近视防控基准标尺">
+      <div class="panel-head">
+        <div>
+          <h2>近视防控基准标尺</h2>
+          <p class="hint">对比国家卫健委全国小学生基准（35.6%）与深圳市 2030 防控目标（&lt;38%）。</p>
+        </div>
+        <div id="benchmarkBadge" class="benchmark-status-badge">评定中</div>
+      </div>
+
+      <div class="benchmark-gauge-wrap">
+        <div class="benchmark-pin" id="benchmarkPin" style="left: 0%;">
+          <div class="benchmark-pin-badge" id="benchmarkPinLabel">本班 0.0%</div>
+          <div class="benchmark-pin-arrow"></div>
+        </div>
+
+        <div class="benchmark-track">
+          <div class="benchmark-zone safe" title="优于全国均值区间（0% ~ 35.6%）"></div>
+          <div class="benchmark-zone buffer" title="均值至目标区间（35.6% ~ 38%）"></div>
+          <div class="benchmark-zone alert" title="防控关注区间（> 38%）"></div>
+
+          <div class="benchmark-line national">
+            <span class="line-tag">全国均值 35.6%</span>
+          </div>
+          <div class="benchmark-line sz-target">
+            <span class="line-tag">深圳目标 38%</span>
+          </div>
+        </div>
+
+        <div class="benchmark-ticks">
+          <span>0%</span>
+          <span>10%</span>
+          <span>20%</span>
+          <span>30%</span>
+          <span>40%</span>
+          <span>50%</span>
+        </div>
+      </div>
+
+      <div class="benchmark-legend-bar">
+        <span class="legend-item"><i class="swatch green"></i>优于全国小学生均值区（&lt;35.6%）</span>
+        <span class="legend-item"><i class="swatch yellow"></i>达标缓冲控制区（35.6% ~ 38%）</span>
+        <span class="legend-item"><i class="swatch red"></i>超标预警关注区（&gt;38%）</span>
+      </div>
+    </section>
+
+    <!-- 性别对比 -->
     <section class="panel gender-panel">
       <div class="panel-head">
         <div>
@@ -500,6 +922,7 @@
       <div class="bars" id="genderBars"></div>
     </section>
 
+    <!-- 分析结论 -->
     <section class="insights" aria-label="分析结论">
       <article class="insight">
         <b>整体水平</b>
@@ -515,7 +938,7 @@
   </main>
 
   <!-- records 数据由 update_page_data.py 根据 近视率.xlsx 生成 -->
-  <script type="application/json" id="records-data">[{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true}]</script>
+  <script type="application/json" id="records-data">[{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true}]</script>
   <script>
     const records = JSON.parse(document.getElementById("records-data").textContent);
 
@@ -526,32 +949,90 @@
     ));
     const genderName = (label) => label.length === 1 ? `${label}生` : label;
     const fmtRateText = (item) => `${genderName(item.label)}近视率为 ${fmt(item.rate)}（${item.myopia}/${item.total}）`;
+
     const total = records.length;
     const myopia = records.filter((item) => item.myopia).length;
     const overallRate = percent(myopia, total);
 
-    document.documentElement.style.setProperty("--rate-deg", `${overallRate * 3.6}deg`);
-    document.querySelector("#overallRate").textContent = fmt(overallRate);
+    // 数字缓动递增动画辅助函数
+    function animateNumber(element, start, end, duration, formatFn, onProgress) {
+      const startTime = performance.now();
+      function step(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const current = start + (end - start) * ease;
+        if (element && formatFn) {
+          element.textContent = formatFn(current);
+        }
+        if (onProgress) {
+          onProgress(current, ease);
+        }
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          if (element && formatFn) element.textContent = formatFn(end);
+          if (onProgress) onProgress(end, 1);
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    // 1. 整体圆环动效与大数字动画
+    animateNumber(
+      document.querySelector("#overallRate"),
+      0,
+      overallRate,
+      950,
+      (val) => fmt(val),
+      (val) => {
+        document.documentElement.style.setProperty("--rate-deg", `${val * 3.6}deg`);
+      }
+    );
+
+    animateNumber(document.querySelector("#myopiaCount"), 0, myopia, 800, (v) => Math.round(v));
+    animateNumber(document.querySelector("#clearCount"), 0, total - myopia, 800, (v) => Math.round(v));
+    animateNumber(document.querySelector("#metricTotal"), 0, total, 800, (v) => Math.round(v));
+    animateNumber(document.querySelector("#metricRate"), 0, overallRate, 950, (v) => fmt(v));
+
     document.querySelector("#overallCount").textContent = `${myopia} 人近视`;
-    document.querySelector("#myopiaCount").textContent = myopia;
-    document.querySelector("#clearCount").textContent = total - myopia;
-    document.querySelector("#metricTotal").textContent = total;
-    document.querySelector("#metricRate").textContent = fmt(overallRate);
     document.querySelector("#sampleCount").textContent = `样本 ${total} 人`;
     document.querySelector("#heroCopy").textContent = `基于 ${total} 名学生的性别和近视标记统计。近视列标记为“是”计入近视，空白按未标记近视处理。`;
     document.querySelector("#metricRateNote").textContent = `${myopia} 人被明确标记为近视。`;
 
-    // 基准对比:全国小学生近视率(国家卫健委 2023)、深圳 2030 年防控目标。
+    // 2. 基准对比与标尺
     const NATIONAL_PRIMARY_RATE = 35.6;
-    const SZ_TARGET_RATE = 38;
+    const SZ_TARGET_RATE = 38.0;
     const diffNational = overallRate - NATIONAL_PRIMARY_RATE;
     const meetsTarget = overallRate < SZ_TARGET_RATE;
     const nationalCmp = diffNational === 0
       ? `与全国小学生近视率(${NATIONAL_PRIMARY_RATE}%)持平`
       : `较全国小学生近视率(${NATIONAL_PRIMARY_RATE}%)${diffNational < 0 ? "低" : "高"} ${Math.abs(diffNational).toFixed(1)} 个百分点`;
+
     document.querySelector("#metricBenchmark").textContent = meetsTarget ? "已达标" : "未达标";
     document.querySelector("#metricBenchmarkNote").textContent = `${nationalCmp}，${meetsTarget ? "已达成" : "未达成"}深圳 2030 年防控目标（小学生<${SZ_TARGET_RATE}%）。`;
 
+    const badgeEl = document.querySelector("#benchmarkBadge");
+    if (diffNational < 0) {
+      badgeEl.textContent = `优于全国均值 ${Math.abs(diffNational).toFixed(1)} 个百分点`;
+      badgeEl.className = "benchmark-status-badge";
+    } else if (meetsTarget) {
+      badgeEl.textContent = `达成深圳 2030 目标（<${SZ_TARGET_RATE}%）`;
+      badgeEl.className = "benchmark-status-badge";
+    } else {
+      badgeEl.textContent = `高出防控目标 ${Math.abs(overallRate - SZ_TARGET_RATE).toFixed(1)} 个百分点`;
+      badgeEl.className = "benchmark-status-badge alert";
+    }
+
+    // 标尺滑动动效 (标尺总量以 50% 为满格)
+    const pinPercent = Math.min(Math.max((overallRate / 50) * 100, 2), 98);
+    const pinEl = document.querySelector("#benchmarkPin");
+    const pinLabelEl = document.querySelector("#benchmarkPinLabel");
+    pinLabelEl.textContent = `本班 ${fmt(overallRate)}`;
+    setTimeout(() => {
+      pinEl.style.left = `${pinPercent}%`;
+    }, 150);
+
+    // 3. 性别数据分组与分析
     const genderOrder = ["女", "男"];
     const genders = Array.from(new Set(records.map((item) => item.gender).filter(Boolean))).sort((a, b) => {
       const ai = genderOrder.indexOf(a);
@@ -571,7 +1052,8 @@
     const genderRates = byGender.map((item) => item.rate);
     const genderGap = genderRates.length > 1 ? Math.max(...genderRates) - Math.min(...genderRates) : 0;
     const byRateDesc = [...byGender].sort((a, b) => b.rate - a.rate);
-    document.querySelector("#metricGap").textContent = `${genderGap.toFixed(1)}点`;
+
+    animateNumber(document.querySelector("#metricGap"), 0, genderGap, 800, (v) => `${v.toFixed(1)}点`);
     document.querySelector("#metricGapNote").textContent = byGender.length > 1
       ? (genderGap === 0
         ? "各性别分组近视率持平。"
@@ -579,27 +1061,101 @@
       : byGender.length === 1
         ? "仅一个性别分组，不计算组间差异。"
         : "暂无性别分组数据。";
+
     document.querySelector("#genderHint").textContent = byGender.length
       ? `${byGender.map((item) => `${genderName(item.label)} ${item.total} 人，近视 ${item.myopia} 人`).join("；")}。`
       : "暂无性别分组数据。";
+
     document.querySelector("#overallInsight").textContent = myopia
       ? `全班近视率为 ${fmt(overallRate)}，约每 ${(total / myopia).toFixed(1)} 名学生中有 1 名被标记近视。当前样本中未标记近视人数为 ${total - myopia} 人。`
       : `当前样本没有被标记近视的记录，未标记近视人数为 ${total} 人。`;
+
     document.querySelector("#genderInsight").textContent = byGender.length > 1
       ? `${byGender.map(fmtRateText).join("，")}，最高和最低相差 ${genderGap.toFixed(1)} 个百分点；样本较小，适合先作为观察信号。`
       : byGender.length === 1
         ? `${fmtRateText(byGender[0])}；当前只有一个性别分组，不计算组间差异。`
         : "暂无性别分组数据。";
 
-    document.querySelector("#genderBars").innerHTML = byGender.map((item) => `
+    // 性别柱状图与展开动画
+    const genderBarsEl = document.querySelector("#genderBars");
+    genderBarsEl.innerHTML = byGender.map((item, idx) => `
       <div class="bar-row">
-        <b>${escapeHtml(item.label)}</b>
+        <b>${escapeHtml(genderName(item.label))}</b>
         <div class="bar-track" aria-label="${escapeHtml(item.label)}近视率 ${fmt(item.rate)}">
-          <div class="bar-fill" style="--bar:${item.rate}%"></div>
+          <div class="bar-fill" id="barFill${idx}"></div>
         </div>
         <span class="bar-value">${fmt(item.rate)}</span>
       </div>
     `).join("");
+
+    requestAnimationFrame(() => {
+      byGender.forEach((item, idx) => {
+        const fill = document.getElementById(`barFill${idx}`);
+        if (fill) fill.style.width = `${item.rate}%`;
+      });
+    });
+
+    // 4. 44人学生点阵分布生成与交互筛选
+    const matrixGridEl = document.querySelector("#matrixGrid");
+    const femaleCount = records.filter(r => r.gender === "女").length;
+    const maleCount = records.filter(r => r.gender === "男").length;
+
+    // 动态更新筛选按钮的计数值
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    filterBtns.forEach(btn => {
+      const type = btn.getAttribute("data-filter");
+      if (type === "all") btn.textContent = `全部 (${total})`;
+      if (type === "female") btn.textContent = `女生 (${femaleCount})`;
+      if (type === "male") btn.textContent = `男生 (${maleCount})`;
+      if (type === "myopia") btn.textContent = `仅近视 (${myopia})`;
+      if (type === "clear") btn.textContent = `视力正常 (${total - myopia})`;
+    });
+
+    matrixGridEl.innerHTML = records.map((student, i) => {
+      const idx = String(i + 1).padStart(2, "0");
+      const isFemale = student.gender === "女";
+      const icon = isFemale ? "♀" : "♂";
+      const statusText = student.myopia ? "已近视" : "视力正常";
+      const cellClass = student.myopia ? "myopia-yes" : "myopia-no";
+      const genderClass = isFemale ? "gender-f" : "gender-m";
+
+      return `
+        <div class="student-cell ${cellClass} ${genderClass}" data-gender="${student.gender}" data-myopia="${student.myopia}">
+          <span class="cell-icon">${icon}</span>
+          <span class="cell-num">#${idx}</span>
+          <div class="cell-tooltip">#${idx} ${student.gender}生 · ${statusText}</div>
+        </div>
+      `;
+    }).join("");
+
+    // 筛选按钮切换事件
+    document.querySelector("#filterGroup").addEventListener("click", (e) => {
+      const btn = e.target.closest(".filter-btn");
+      if (!btn) return;
+
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const filter = btn.getAttribute("data-filter");
+      const cells = document.querySelectorAll(".student-cell");
+
+      cells.forEach(cell => {
+        const gender = cell.getAttribute("data-gender");
+        const isMyopia = cell.getAttribute("data-myopia") === "true";
+
+        let match = true;
+        if (filter === "female") match = (gender === "女");
+        else if (filter === "male") match = (gender === "男");
+        else if (filter === "myopia") match = isMyopia;
+        else if (filter === "clear") match = !isMyopia;
+
+        if (match) {
+          cell.classList.remove("dimmed");
+        } else {
+          cell.classList.add("dimmed");
+        }
+      });
+    });
   </script>
 </body>
 </html>
