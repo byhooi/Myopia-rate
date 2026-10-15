@@ -355,10 +355,16 @@
       user-select: none;
     }
 
-    .student-cell:hover {
+    .student-cell:hover,
+    .student-cell:focus-visible {
       transform: scale(1.18) translateY(-4px);
       z-index: 10;
       box-shadow: 0 10px 22px rgba(23, 32, 38, 0.16);
+    }
+
+    .student-cell:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
     }
 
     .student-cell.dimmed {
@@ -423,7 +429,8 @@
       border-top-color: rgba(23, 32, 38, 0.95);
     }
 
-    .student-cell:hover .cell-tooltip {
+    .student-cell:hover .cell-tooltip,
+    .student-cell:focus-visible .cell-tooltip {
       opacity: 1;
       visibility: visible;
       transform: translateX(-50%) translateY(-2px);
@@ -854,12 +861,12 @@
           <h2>全班视力分布矩阵</h2>
           <p class="hint" id="matrixHint">每个卡片代表 1 位学生。悬停查看详情，支持点击分类筛选。</p>
         </div>
-        <div class="filter-group" id="filterGroup" role="tablist" aria-label="学生矩阵筛选">
-          <button class="filter-btn active" data-filter="all">全部 (44)</button>
-          <button class="filter-btn" data-filter="female">女生 (24)</button>
-          <button class="filter-btn" data-filter="male">男生 (20)</button>
-          <button class="filter-btn" data-filter="myopia">仅近视 (14)</button>
-          <button class="filter-btn" data-filter="clear">视力正常 (30)</button>
+        <div class="filter-group" id="filterGroup" role="group" aria-label="学生矩阵筛选">
+          <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">全部 (44)</button>
+          <button type="button" class="filter-btn" data-filter="female" aria-pressed="false">女生 (24)</button>
+          <button type="button" class="filter-btn" data-filter="male" aria-pressed="false">男生 (20)</button>
+          <button type="button" class="filter-btn" data-filter="myopia" aria-pressed="false">仅近视 (14)</button>
+          <button type="button" class="filter-btn" data-filter="clear" aria-pressed="false">视力正常 (30)</button>
         </div>
       </div>
       <div class="matrix-grid" id="matrixGrid"></div>
@@ -1114,16 +1121,19 @@
     matrixGridEl.innerHTML = records.map((student, i) => {
       const idx = String(i + 1).padStart(2, "0");
       const isFemale = student.gender === "女";
-      const icon = isFemale ? "♀" : "♂";
+      const icon = isFemale ? "♀" : (student.gender === "男" ? "♂" : "•");
       const statusText = student.myopia ? "已近视" : "视力正常";
       const cellClass = student.myopia ? "myopia-yes" : "myopia-no";
       const genderClass = isFemale ? "gender-f" : "gender-m";
+      const safeGender = escapeHtml(student.gender);
+      const safeGenderLabel = escapeHtml(genderName(student.gender));
+      const detailText = `#${idx} ${safeGenderLabel} · ${statusText}`;
 
       return `
-        <div class="student-cell ${cellClass} ${genderClass}" data-gender="${student.gender}" data-myopia="${student.myopia}">
-          <span class="cell-icon">${icon}</span>
-          <span class="cell-num">#${idx}</span>
-          <div class="cell-tooltip">#${idx} ${student.gender}生 · ${statusText}</div>
+        <div class="student-cell ${cellClass} ${genderClass}" data-gender="${safeGender}" data-myopia="${Boolean(student.myopia)}" tabindex="0" role="group" aria-label="${detailText}">
+          <span class="cell-icon" aria-hidden="true">${icon}</span>
+          <span class="cell-num" aria-hidden="true">#${idx}</span>
+          <div class="cell-tooltip" aria-hidden="true">${detailText}</div>
         </div>
       `;
     }).join("");
@@ -1133,8 +1143,12 @@
       const btn = e.target.closest(".filter-btn");
       if (!btn) return;
 
-      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".filter-btn").forEach(b => {
+        b.classList.remove("active");
+        b.setAttribute("aria-pressed", "false");
+      });
       btn.classList.add("active");
+      btn.setAttribute("aria-pressed", "true");
 
       const filter = btn.getAttribute("data-filter");
       const cells = document.querySelectorAll(".student-cell");
@@ -1151,8 +1165,12 @@
 
         if (match) {
           cell.classList.remove("dimmed");
+          cell.setAttribute("tabindex", "0");
+          cell.removeAttribute("aria-hidden");
         } else {
           cell.classList.add("dimmed");
+          cell.setAttribute("tabindex", "-1");
+          cell.setAttribute("aria-hidden", "true");
         }
       });
     });
