@@ -24,6 +24,9 @@
       --gold-soft: #fff1c9;
       --shadow: 0 16px 40px rgba(23, 32, 38, 0.07);
       --radius: 10px;
+      /* 基准标尺位置：占 0~50% 量程的百分比，由 JS 依据基准常量写入 */
+      --benchmark-national: 71.2%;
+      --benchmark-buffer-end: 76%;
     }
 
     * {
@@ -349,7 +352,6 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
       border: 1.5px solid transparent;
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, opacity 0.25s ease;
       user-select: none;
@@ -483,19 +485,19 @@
     }
 
     .benchmark-zone.safe {
-      width: 71.2%; /* 35.6 / 50 * 100% */
+      width: var(--benchmark-national);
       background: linear-gradient(90deg, #dff3ee, #c7ece3);
       border-top-left-radius: 999px;
       border-bottom-left-radius: 999px;
     }
 
     .benchmark-zone.buffer {
-      width: 4.8%; /* (38 - 35.6) / 50 * 100% */
+      width: calc(var(--benchmark-buffer-end) - var(--benchmark-national));
       background: #fff0c2;
     }
 
     .benchmark-zone.alert {
-      width: 24%; /* (50 - 38) / 50 * 100% */
+      width: calc(100% - var(--benchmark-buffer-end));
       background: #ffe3dd;
       border-top-right-radius: 999px;
       border-bottom-right-radius: 999px;
@@ -511,12 +513,12 @@
     }
 
     .benchmark-line.national {
-      left: 71.2%;
+      left: var(--benchmark-national);
       border-left: 2px dashed #0b8f75;
     }
 
     .benchmark-line.sz-target {
-      left: 76%;
+      left: var(--benchmark-buffer-end);
       border-left: 2px solid var(--red);
     }
 
@@ -792,7 +794,7 @@
         </div>
         <div class="legend" aria-label="图例">
           <span class="legend-item"><i class="swatch red"></i>已标记近视</span>
-          <span class="legend-item"><i class="swatch green"></i>未标记近视</span>
+          <span class="legend-item"><i class="swatch green"></i>未近视</span>
         </div>
       </div>
 
@@ -811,7 +813,7 @@
             <b id="myopiaCount">0</b>
           </div>
           <div class="mini-stat">
-            <span class="label">未标记人数</span>
+            <span class="label">未近视人数</span>
             <b id="clearCount">0</b>
           </div>
         </div>
@@ -854,19 +856,19 @@
       </article>
     </section>
 
-    <!-- 44人学生点阵分布矩阵 -->
+    <!-- 全班学生视力分布矩阵（人数随数据变化） -->
     <section class="panel matrix-panel" aria-label="全班视力分布矩阵">
       <div class="matrix-header">
         <div>
           <h2>全班视力分布矩阵</h2>
-          <p class="hint" id="matrixHint">每个卡片代表 1 位学生。悬停查看详情，支持点击分类筛选。</p>
+          <p class="hint" id="matrixHint">每个卡片代表 1 位学生。悬停查看详情，支持点击按钮按类别筛选。</p>
         </div>
         <div class="filter-group" id="filterGroup" role="group" aria-label="学生矩阵筛选">
-          <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">全部 (44)</button>
-          <button type="button" class="filter-btn" data-filter="female" aria-pressed="false">女生 (24)</button>
-          <button type="button" class="filter-btn" data-filter="male" aria-pressed="false">男生 (20)</button>
-          <button type="button" class="filter-btn" data-filter="myopia" aria-pressed="false">仅近视 (14)</button>
-          <button type="button" class="filter-btn" data-filter="clear" aria-pressed="false">视力正常 (30)</button>
+          <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">全部</button>
+          <button type="button" class="filter-btn" data-filter="female" aria-pressed="false">女生</button>
+          <button type="button" class="filter-btn" data-filter="male" aria-pressed="false">男生</button>
+          <button type="button" class="filter-btn" data-filter="myopia" aria-pressed="false">仅近视</button>
+          <button type="button" class="filter-btn" data-filter="clear" aria-pressed="false">未近视</button>
         </div>
       </div>
       <div class="matrix-grid" id="matrixGrid"></div>
@@ -941,11 +943,11 @@
       </article>
     </section>
 
-    <p class="footnote">数据来源：近视率.xlsx（班级原始记录）；全国小学生近视率 35.6% 来自国家卫健委 2023 年数据；深圳 2030 年防控目标（小学生&lt;38%）来自《深圳市综合防控儿童青少年近视实施方案》。统计口径：仅“近视”列为“是”的记录计入近视，空白记录计入未标记近视。</p>
+    <p class="footnote"><span id="dataUpdated">2026-10-21</span> 更新｜数据来源：近视率.xlsx（班级原始记录）；全国小学生近视率 35.6% 来自国家卫健委 2023 年数据；深圳 2030 年防控目标（小学生&lt;38%）来自《深圳市综合防控儿童青少年近视实施方案》。统计口径：「近视」列填「是」（即该学生戴眼镜）计入近视；该列空白表示未戴眼镜，计为未近视。</p>
   </main>
 
   <!-- records 数据由 update_page_data.py 根据 近视率.xlsx 生成 -->
-  <script type="application/json" id="records-data">[{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true}]</script>
+  <script type="application/json" id="records-data">[{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":true},{"gender":"女","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"女","myopia":false},{"gender":"女","myopia":true},{"gender":"女","myopia":true},{"gender":"男","myopia":false},{"gender":"男","myopia":false},{"gender":"女","myopia":true}]</script>
   <script>
     const records = JSON.parse(document.getElementById("records-data").textContent);
 
@@ -1003,12 +1005,18 @@
 
     document.querySelector("#overallCount").textContent = `${myopia} 人近视`;
     document.querySelector("#sampleCount").textContent = `样本 ${total} 人`;
-    document.querySelector("#heroCopy").textContent = `基于 ${total} 名学生的性别和近视标记统计。近视列标记为“是”计入近视，空白按未标记近视处理。`;
+    document.querySelector("#heroCopy").textContent = `基于 ${total} 名学生的性别和戴镜情况统计。「近视」列填「是」计入近视，空白按未近视处理。`;
     document.querySelector("#metricRateNote").textContent = `${myopia} 人被明确标记为近视。`;
 
     // 2. 基准对比与标尺
+    // 标尺量程固定为 0~50%，基准位置由常量换算后写入 CSS 变量，避免 CSS 里重复硬编码。
     const NATIONAL_PRIMARY_RATE = 35.6;
     const SZ_TARGET_RATE = 38.0;
+    const SCALE_MAX = 50;
+    const scalePercent = (value) => `${(value / SCALE_MAX) * 100}%`;
+    document.documentElement.style.setProperty("--benchmark-national", scalePercent(NATIONAL_PRIMARY_RATE));
+    document.documentElement.style.setProperty("--benchmark-buffer-end", scalePercent(SZ_TARGET_RATE));
+
     const diffNational = overallRate - NATIONAL_PRIMARY_RATE;
     const meetsTarget = overallRate < SZ_TARGET_RATE;
     const nationalCmp = diffNational === 0
@@ -1030,8 +1038,8 @@
       badgeEl.className = "benchmark-status-badge alert";
     }
 
-    // 标尺滑动动效 (标尺总量以 50% 为满格)
-    const pinPercent = Math.min(Math.max((overallRate / 50) * 100, 2), 98);
+    // 标尺滑动动效 (标尺量程见 SCALE_MAX)
+    const pinPercent = Math.min(Math.max((overallRate / SCALE_MAX) * 100, 2), 98);
     const pinEl = document.querySelector("#benchmarkPin");
     const pinLabelEl = document.querySelector("#benchmarkPinLabel");
     pinLabelEl.textContent = `本班 ${fmt(overallRate)}`;
@@ -1074,8 +1082,8 @@
       : "暂无性别分组数据。";
 
     document.querySelector("#overallInsight").textContent = myopia
-      ? `全班近视率为 ${fmt(overallRate)}，约每 ${(total / myopia).toFixed(1)} 名学生中有 1 名被标记近视。当前样本中未标记近视人数为 ${total - myopia} 人。`
-      : `当前样本没有被标记近视的记录，未标记近视人数为 ${total} 人。`;
+      ? `全班近视率为 ${fmt(overallRate)}，约每 ${(total / myopia).toFixed(1)} 名学生中有 1 名被标记近视。当前样本中未近视人数为 ${total - myopia} 人。`
+      : `当前样本没有被标记近视的记录，未近视人数为 ${total} 人。`;
 
     document.querySelector("#genderInsight").textContent = byGender.length > 1
       ? `${byGender.map(fmtRateText).join("，")}，最高和最低相差 ${genderGap.toFixed(1)} 个百分点；样本较小，适合先作为观察信号。`
@@ -1102,7 +1110,7 @@
       });
     });
 
-    // 4. 44人学生点阵分布生成与交互筛选
+    // 4. 学生点阵分布生成与交互筛选
     const matrixGridEl = document.querySelector("#matrixGrid");
     const femaleCount = records.filter(r => r.gender === "女").length;
     const maleCount = records.filter(r => r.gender === "男").length;
@@ -1115,14 +1123,14 @@
       if (type === "female") btn.textContent = `女生 (${femaleCount})`;
       if (type === "male") btn.textContent = `男生 (${maleCount})`;
       if (type === "myopia") btn.textContent = `仅近视 (${myopia})`;
-      if (type === "clear") btn.textContent = `视力正常 (${total - myopia})`;
+      if (type === "clear") btn.textContent = `未近视 (${total - myopia})`;
     });
 
     matrixGridEl.innerHTML = records.map((student, i) => {
       const idx = String(i + 1).padStart(2, "0");
       const isFemale = student.gender === "女";
       const icon = isFemale ? "♀" : (student.gender === "男" ? "♂" : "•");
-      const statusText = student.myopia ? "已近视" : "视力正常";
+      const statusText = student.myopia ? "已近视" : "未近视";
       const cellClass = student.myopia ? "myopia-yes" : "myopia-no";
       const genderClass = isFemale ? "gender-f" : "gender-m";
       const safeGender = escapeHtml(student.gender);

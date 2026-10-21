@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import re
+import sys
+from datetime import date
 from pathlib import Path
 
 import openpyxl
@@ -15,7 +17,7 @@ EXPECTED_GENDERS = ("女", "男")
 EXPECTED_MYOPIA_VALUES = ("是", "否", "")
 
 
-def read_records() -> list[dict[str, object]]:
+def read_records(warnings: list[str]) -> list[dict[str, object]]:
     workbook = openpyxl.load_workbook(EXCEL_PATH, data_only=True)
     sheet = workbook.active
     header = [cell.value for cell in sheet[1]]
@@ -36,12 +38,12 @@ def read_records() -> list[dict[str, object]]:
 
         gender_text = str(gender).strip()
         if gender_text not in EXPECTED_GENDERS:
-            print(f"警告：第 {row_number} 行性别为“{gender_text}”，将按独立分组统计。")
+            warnings.append(f"第 {row_number} 行性别为“{gender_text}”，将按独立分组统计。")
 
         myopia_value = row[myopia_index] if myopia_index < len(row) else None
         myopia_text = str(myopia_value).strip() if myopia_value is not None else ""
         if myopia_text not in EXPECTED_MYOPIA_VALUES:
-            print(f"警告：第 {row_number} 行近视列为“{myopia_text}”，已按未标记近视处理。")
+            warnings.append(f"第 {row_number} 行近视列为“{myopia_text}”，已按未近视处理。")
 
         records.append({
             "gender": gender_text,
@@ -51,19 +53,28 @@ def read_records() -> list[dict[str, object]]:
     return records
 
 
-def update_html(records: list[dict[str, object]]) -> None:
+def update_html(records: list[dict[str, object]], updated: str) -> None:
     html = HTML_PATH.read_text(encoding="utf-8")
     data = json.dumps(records, ensure_ascii=False, separators=(",", ":"))
-    pattern = r'(<script type="application/json" id="records-data">).*?(</script>)'
-    html, count = re.subn(
-        pattern,
+
+    html, data_count = re.subn(
+        r'(<script type="application/json" id="records-data">).*?(</script>)',
         lambda match: f"{match.group(1)}{data}{match.group(2)}",
         html,
         count=1,
         flags=re.S,
     )
-    if count != 1:
+    if data_count != 1:
         raise ValueError('没有在 index.html 中找到 id="records-data" 的数据块')
+
+    html, date_count = re.subn(
+        r'(<span id="dataUpdated">)[^<]*(</span>)',
+        lambda match: f"{match.group(1)}{updated}{match.group(2)}",
+        html,
+        count=1,
+    )
+    if date_count != 1:
+        raise ValueError('没有在 index.html 中找到 id="dataUpdated" 的时间戳占位')
 
     HTML_PATH.write_text(html, encoding="utf-8")
 
@@ -84,17 +95,29 @@ def gender_summary(records: list[dict[str, object]]) -> str:
 
 
 def main() -> None:
-    records = read_records()
-    update_html(records)
+    warnings: list[str] = []
+    records = read_records(warnings)
+    if not records:
+        print("错误：Excel 中没有有效记录，请检查「性别」列是否为空。", file=sys.stderr)
+        sys.exit(1)
+
+    updated = date.today().isoformat()
+    update_html(records, updated)
 
     total = len(records)
     myopia = sum(1 for item in records if item["myopia"])
     rate = myopia / total * 100 if total else 0
-    print(f"已更新 index.html：{total} 人，{myopia} 人近视，近视率 {rate:.1f}%。")
+    print(f"已更新 index.html：{total} 人，{myopia} 人近视，近视率 {rate:.1f}%。数据日期 {updated}。")
 
     summary = gender_summary(records)
     if summary:
         print(f"性别分组：{summary}。")
+
+    if warnings:
+        print(f"发现 {len(warnings)} 条数据异常，请修正 Excel 后重新运行：", file=sys.stderr)
+        for message in warnings:
+            print(f"  警告：{message}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
